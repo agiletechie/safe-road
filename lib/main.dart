@@ -39,24 +39,12 @@ class MyApp extends StatelessWidget {
         child: Consumer<AuthNotifier>(
             builder: (context, AuthNotifier value, child) {
           if (value.user?.displayName != null) {
-            return Home();
+            return const Home();
           } else {
-            return AuthPage();
+            return const AuthPage();
           }
         }),
       ),
-      // home: ChangeNotifierProvider<AuthNotifier>(
-      //   create: (context) => AuthNotifier(data: Data()),
-      //   child: StreamBuilder(
-      //     stream: FirebaseAuth.instance.authStateChanges(),
-      //     builder: (context, snapshot) {
-      //       if (snapshot.data?.displayName == null) {
-      //         return AuthPage();
-      //       }
-      //       return Home();
-      //     },
-      //   ),
-      // ),
     );
   }
 }

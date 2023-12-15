@@ -103,6 +103,7 @@ class Data {
       throw Exception('Error in file upload');
     }
 
+    report.reportedBy = _auth.currentUser!.displayName!;
     report.imageUrl = link;
     final DocumentReference<Map<String, dynamic>> doc =
         await _db.collection('reports').add(report.toJson());

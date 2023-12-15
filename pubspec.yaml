@@ -43,8 +43,9 @@ dependencies:
   flutter_svg: ^2.0.9
   flutter_map: ^6.1.0
   cached_network_image: ^3.3.0
-  latlng: ^1.0.0
+  latlong2: ^0.9.0
   image_picker: ^1.0.5
+  location: ^5.0.0
 
 dev_dependencies:
   flutter_test:

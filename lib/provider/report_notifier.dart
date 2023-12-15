@@ -12,12 +12,14 @@ class ReportNotifier with ChangeNotifier {
   String? _imageLink;
   bool _isLoading = false;
   bool _addedDoc = false;
+  bool _mapView = false;
 
   List<Report> get reports => _reports;
   bool get hasException => _hasException;
   String? get link => _imageLink;
   bool get isLoading => _isLoading;
   bool get addedDoc => _addedDoc;
+  bool get mapView => _mapView;
 
   void getReports() async {
     _hasException = false;
@@ -35,13 +37,18 @@ class ReportNotifier with ChangeNotifier {
     try {
       _isLoading = true;
       notifyListeners();
-      String id = await _data.writeReport(image, report);
+      await _data.writeReport(image, report);
       _addedDoc = true;
     } catch (e) {
       _hasException = true;
     }
     _isLoading = false;
 
+    notifyListeners();
+  }
+
+  void toggleMapView() {
+    _mapView = !_mapView;
     notifyListeners();
   }
 

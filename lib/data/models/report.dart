@@ -16,10 +16,9 @@ class Report {
   });
 
   factory Report.fromJson(Map<String, dynamic> json) {
-    final DocumentReference ref = json['reported_by'];
     GeoPoint location = json['location'];
     return Report(
-        reportedBy: ref.id,
+        reportedBy: json['reported_by'],
         title: json['title'],
         description: json['description'],
         imageUrl: json['imageUrl'],
@@ -28,7 +27,7 @@ class Report {
 
   Map<String, dynamic> toJson() {
     return {
-      'reported_by': 'ref',
+      'reported_by': reportedBy,
       'title': title,
       'description': description,
       'imageUrl': imageUrl,

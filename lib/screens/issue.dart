@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:location/location.dart';
 import 'package:provider/provider.dart';
 import 'package:road_safety/data/models/report.dart';
 import 'package:road_safety/provider/report_notifier.dart';
@@ -19,11 +20,40 @@ class _IssuePageState extends State<IssuePage> {
   late final TextEditingController _descController;
   final ImagePicker _imagePicker = ImagePicker();
   XFile? image;
+  final Location _location = Location();
+  LocationData? _locationData;
+  bool? _serviceEnabled;
+  PermissionStatus? _permissionStatus;
+
+  void getPermission() async {
+    _serviceEnabled = await _location.serviceEnabled();
+    if (!(_serviceEnabled ?? true)) {
+      _serviceEnabled = await _location.requestService();
+      if (!(_serviceEnabled ?? false)) {
+        return;
+      }
+    }
+
+    _permissionStatus = await _location.hasPermission();
+    if (_permissionStatus == PermissionStatus.denied) {
+      _permissionStatus = await _location.requestPermission();
+      if (_permissionStatus != PermissionStatus.granted) {
+        return;
+      }
+    }
+
+    try {
+      _locationData = await _location.getLocation();
+    } catch (e) {
+      _locationData = null;
+    }
+  }
 
   @override
   void initState() {
     _titleController = TextEditingController();
     _descController = TextEditingController();
+    getPermission();
     super.initState();
   }
 
@@ -38,7 +68,7 @@ class _IssuePageState extends State<IssuePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add an issue'),
+        title: const Text('Add an issue'),
         backgroundColor: Colors.orange.shade100,
       ),
       backgroundColor: Colors.orange.shade100,
@@ -59,8 +89,12 @@ class _IssuePageState extends State<IssuePage> {
                         setState(() {});
                       } catch (e) {
                         image = null;
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: Text('Failed to take photo. Try again!')));
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text(
+                                      'Failed to take photo. Try again!')));
+                        }
                       }
                     },
                     child: Card(
@@ -72,7 +106,7 @@ class _IssuePageState extends State<IssuePage> {
                               File(image!.path),
                               fit: BoxFit.cover,
                             )
-                          : Column(
+                          : const Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(Icons.image_outlined, size: 44),
@@ -84,28 +118,29 @@ class _IssuePageState extends State<IssuePage> {
                 ),
                 TextField(
                   controller: _titleController,
-                  decoration: InputDecoration(label: Text('Title')),
+                  decoration: const InputDecoration(label: Text('Title')),
                 ),
                 TextField(
                   controller: _descController,
                   maxLines: 2,
-                  decoration: InputDecoration(label: Text('Description')),
+                  decoration: const InputDecoration(label: Text('Description')),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 128,
                 ),
                 Consumer<ReportNotifier>(
                   builder: (BuildContext context, ReportNotifier value, child) {
                     if (!value.isLoading && value.addedDoc) {
                       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                        ScaffoldMessenger.of(context)
-                            .showSnackBar(SnackBar(content: Text('Added!')));
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Added!')));
                         value.setAddedDocValue(false);
+                        value.getReports();
                         Navigator.of(context).pop();
                       });
                     }
                     return value.isLoading
-                        ? Row(
+                        ? const Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text('Reporting'),
@@ -124,16 +159,18 @@ class _IssuePageState extends State<IssuePage> {
                                         title: _titleController.text,
                                         description: _descController.text,
                                         imageUrl: '',
-                                        location: GeoPoint(12.9106, 77.1606)));
+                                        location: GeoPoint(
+                                            _locationData?.latitude ?? 12.9106,
+                                            _locationData?.longitude ??
+                                                77.1606)));
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
+                                    const SnackBar(
                                         content: Text('Fill all details!')));
                               }
                             },
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 32.0),
+                            child: const Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 32.0),
                               child: Text(
                                 'Report',
                               ),

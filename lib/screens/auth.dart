@@ -33,13 +33,12 @@ class _AuthPageState extends State<AuthPage> {
 
   Future<void> showNameDialog(
       BuildContext context, AuthNotifier authNotifier) async {
-    print('Hahha:D');
     final name = await showDialog<String>(
       context: context,
       barrierDismissible: false,
       builder: (context) {
         return AlertDialog(
-          title: Text('Enter you name'),
+          title: const Text('Enter you name'),
           content: TextField(
             autofocus: true,
             controller: _dialogController,
@@ -51,7 +50,7 @@ class _AuthPageState extends State<AuthPage> {
                     Navigator.of(context).pop(_dialogController.text);
                   }
                 },
-                child: Text('Submit'))
+                child: const Text('Submit'))
           ],
         );
       },
@@ -74,27 +73,27 @@ class _AuthPageState extends State<AuthPage> {
                 SvgPicture.asset(
                     isSignUp ? 'assets/sign_up.svg' : 'assets/login.svg',
                     height: 240),
-                SizedBox(height: 32),
+                const SizedBox(height: 32),
                 TextField(
                   controller: _emailController,
                   decoration: InputDecoration(
-                      label: Text('Email'),
+                      label: const Text('Email'),
                       isDense: true,
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(24),
-                          borderSide: BorderSide(color: Colors.white))),
+                          borderSide: const BorderSide(color: Colors.white))),
                 ),
-                SizedBox(height: 24),
+                const SizedBox(height: 24),
                 TextField(
                   controller: _passwordController,
                   decoration: InputDecoration(
                       isDense: true,
-                      label: Text('Password'),
+                      label: const Text('Password'),
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(24),
-                          borderSide: BorderSide(color: Colors.white))),
+                          borderSide: const BorderSide(color: Colors.white))),
                 ),
-                SizedBox(height: 32),
+                const SizedBox(height: 32),
                 Consumer<AuthNotifier>(
                   builder: (context, AuthNotifier authNotifier, child) {
                     if (authNotifier.errorMessage != null) {
@@ -109,7 +108,7 @@ class _AuthPageState extends State<AuthPage> {
                           (timeStamp) => showNameDialog(context, authNotifier));
                     }
                     return authNotifier.isLoading
-                        ? CircularProgressIndicator()
+                        ? const CircularProgressIndicator()
                         : ElevatedButton(
                             onPressed: () async {
                               if (_emailController.text.isNotEmpty &&
@@ -131,12 +130,12 @@ class _AuthPageState extends State<AuthPage> {
                           );
                   },
                 ),
-                SizedBox(height: 48),
+                const SizedBox(height: 48),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    if (isSignUp) Text('Already have an account ?'),
-                    if (!isSignUp) Text('Not have an account ?'),
+                    if (isSignUp) const Text('Already have an account ?'),
+                    if (!isSignUp) const Text('Not have an account ?'),
                     TextButton(
                       onPressed: () {
                         setState(() {
@@ -144,7 +143,7 @@ class _AuthPageState extends State<AuthPage> {
                         });
                       },
                       child: Text(isSignUp ? 'SignIn' : 'SignUp',
-                          style: TextStyle(fontSize: 12)),
+                          style: const TextStyle(fontSize: 12)),
                     ),
                   ],
                 ),
